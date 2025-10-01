@@ -5,17 +5,20 @@ from agents import Agent, OpenAIChatCompletionsModel, Runner, function_tool, set
 from openai import AsyncOpenAI
 
 # Load API key
-gemini_api_key = st.secrets.get("GEMINI_API_KEY")
+grok_api_key = st.secrets.get("GROK_API_KEY")
 
-if not gemini_api_key:
-    st.error("❌ GEMINI_API_KEY is not set. Please add it in .env or Streamlit secrets.")
+if not grok_api_key:
+    st.error("❌ GROK_API_KEY is not set. Please add it in .env or Streamlit secrets.")
     st.stop()
 
 # Fix event loop issues
 nest_asyncio.apply()
 
-# OpenAI Client (Gemini)
-client = AsyncOpenAI(api_key=gemini_api_key)
+# Grok Client (via OpenAI SDK wrapper)
+client = AsyncOpenAI(
+    api_key=grok_api_key,
+    base_url="https://api.x.ai/v1"   # ✅ Grok API endpoint
+)
 
 # Disable tracing
 set_tracing_disabled(disabled=True)
@@ -41,7 +44,7 @@ def convert_currency(amount: float, from_currency: str, to_currency: str) -> str
 
 # --------- AGENT ---------
 model = OpenAIChatCompletionsModel(
-    model="gemini-2.0-flash",  # ✅ stable model
+    model="grok-beta",   # ✅ Grok’s chat model
     openai_client=client,
 )
 
@@ -53,8 +56,8 @@ agent = Agent(
 )
 
 # --------- STREAMLIT UI ---------
-st.set_page_config(page_title="💱 Currency Converter Agent", page_icon="💱")
-st.title("💱 Currency Converter Agent")
+st.set_page_config(page_title="💱 Currency Converter Agent (Grok)", page_icon="💱")
+st.title("💱 Currency Converter Agent (Grok)")
 st.markdown("Welcome! I can convert currencies using live exchange rates. Type your request below 👇")
 
 if "messages" not in st.session_state:
