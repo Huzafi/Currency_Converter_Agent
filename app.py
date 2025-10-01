@@ -1,5 +1,5 @@
 import streamlit as st
-from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel,function_tool
 from agents.run import RunConfig
 import asyncio
 import requests
