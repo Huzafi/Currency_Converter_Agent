@@ -1,5 +1,5 @@
 import streamlit as st
-from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel,function_tool
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel, function_tool
 from agents.run import RunConfig
 import asyncio
 import requests
@@ -26,7 +26,6 @@ config = RunConfig(
     model_provider=external_client,
     tracing_disabled=True
 )
-
 
 # --------- TOOL ---------
 @function_tool
@@ -76,7 +75,8 @@ if user_input := st.chat_input("Type your conversion request here..."):
 
     with st.chat_message("assistant"):
         with st.spinner("Converting..."):
-            result = Runner.run_sync(agent, user_input)
+            # ✅ Fix: use asyncio.run instead of Runner.run_sync (Python 3.13 compatible)
+            result = asyncio.run(Runner.run(agent, user_input))
             response = result.final_output or "⚠️ Sorry, I couldn’t process your request."
             st.markdown(f"💬 **Response:**\n\n{response}")
     st.session_state.messages.append({"role": "assistant", "content": response})
