@@ -1,27 +1,31 @@
 import streamlit as st
-import nest_asyncio
-import requests
-from agents import Agent, OpenAIChatCompletionsModel, Runner, function_tool, set_tracing_disabled
-from openai import AsyncOpenAI
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
+from agents.run import RunConfig
+import asyncio
 
-# Load API key
-grok_api_key = st.secrets.get("GROK_API_KEY")
+gemini_api_key = st.secrets["GEMINI_API_KEY"]
 
-if not grok_api_key:
-    st.error("❌ GROK_API_KEY is not set. Please add it in .env or Streamlit secrets.")
-    st.stop()
+# Check API key
+if not gemini_api_key:
+    raise ValueError("GEMINI_API_KEY is not set.")
 
-# Fix event loop issues
-nest_asyncio.apply()
-
-# Grok Client (via OpenAI SDK wrapper)
-client = AsyncOpenAI(
-    api_key=grok_api_key,
-    base_url="https://api.x.ai/v1"   # ✅ Grok API endpoint
+# Client setup
+external_client = AsyncOpenAI(
+    api_key=gemini_api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
 )
 
-# Disable tracing
-set_tracing_disabled(disabled=True)
+model = OpenAIChatCompletionsModel(
+    model="gemini-2.0-flash",
+    openai_client=external_client
+)
+
+config = RunConfig(
+    model=model,
+    model_provider=external_client,
+    tracing_disabled=True
+)
+
 
 # --------- TOOL ---------
 @function_tool
@@ -41,17 +45,6 @@ def convert_currency(amount: float, from_currency: str, to_currency: str) -> str
             return f"❌ Currency {to_currency.upper()} not supported."
     except Exception as e:
         return f"⚠️ Failed to fetch exchange rate. Error: {str(e)}"
-
-# --------- AGENT ---------
-# --------- AGENT ---------
-model = OpenAIChatCompletionsModel(
-    model="gpt-4o-mini",   # ✅ 
-    openai_client=AsyncOpenAI(
-        api_key=st.secrets["GROK_API_KEY"],
-        base_url="https://api.x.ai/v1"   # ✅ Grok endpoint
-    ),
-
-)
 
 agent = Agent(
     name="Currency Converter Agent",
