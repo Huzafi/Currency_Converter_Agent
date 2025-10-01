@@ -43,9 +43,14 @@ def convert_currency(amount: float, from_currency: str, to_currency: str) -> str
         return f"⚠️ Failed to fetch exchange rate. Error: {str(e)}"
 
 # --------- AGENT ---------
+# --------- AGENT ---------
 model = OpenAIChatCompletionsModel(
-    model="grok-beta",   # ✅ Grok’s chat model
-    openai_client=client,
+    model="grok-1",   # ✅ sahi model name (try this instead of grok-beta)
+    openai_client=AsyncOpenAI(
+        api_key=st.secrets["GROK_API_KEY"],
+        base_url="https://api.x.ai/v1"   # ✅ Grok endpoint
+    ),
+
 )
 
 agent = Agent(
@@ -57,7 +62,7 @@ agent = Agent(
 
 # --------- STREAMLIT UI ---------
 st.set_page_config(page_title="💱 Currency Converter Agent (Grok)", page_icon="💱")
-st.title("💱 Currency Converter Agent (Grok)")
+st.title("💱 Currency Converter Agent")
 st.markdown("Welcome! I can convert currencies using live exchange rates. Type your request below 👇")
 
 if "messages" not in st.session_state:
