@@ -4,18 +4,19 @@ import requests
 from agents import Agent, OpenAIChatCompletionsModel, Runner, function_tool, set_tracing_disabled
 from openai import AsyncOpenAI
 
+# Load API key
 gemini_api_key = st.secrets["GEMINI_API_KEY"]
 
 if not gemini_api_key:
     st.error("❌ GEMINI_API_KEY is not set. Please add it in .env or Streamlit secrets.")
     st.stop()
 
-# Apply nest_asyncio fix
+# Fix event loop issues
 nest_asyncio.apply()
 
-# OpenAI Client
+# OpenAI Client (Gemini endpoint)
 client = AsyncOpenAI(
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    base_url="https://generativelanguage.googleapis.com/v1beta/",  # ✅ fixed
     api_key=gemini_api_key
 )
 
@@ -39,7 +40,7 @@ def convert_currency(amount: float, from_currency: str, to_currency: str) -> str
 
 # Agent setup
 model = OpenAIChatCompletionsModel(
-    model="gemini-2.0-flash",
+    model="gemini-1.5-flash",  # ✅ stable model
     openai_client=client,
 )
 
