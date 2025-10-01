@@ -45,7 +45,7 @@ def convert_currency(amount: float, from_currency: str, to_currency: str) -> str
 # --------- AGENT ---------
 # --------- AGENT ---------
 model = OpenAIChatCompletionsModel(
-    model="grok-1",   # ✅ sahi model name (try this instead of grok-beta)
+    model="gpt-4o-mini",   # ✅ 
     openai_client=AsyncOpenAI(
         api_key=st.secrets["GROK_API_KEY"],
         base_url="https://api.x.ai/v1"   # ✅ Grok endpoint
