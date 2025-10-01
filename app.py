@@ -40,7 +40,7 @@ def convert_currency(amount: float, from_currency: str, to_currency: str) -> str
 
 # Agent setup
 model = OpenAIChatCompletionsModel(
-    model="gemini-1.5-flash",  # ✅ stable model
+    model="gemini-2.0-flash",  # ✅ stable model
     openai_client=client,
 )
 
